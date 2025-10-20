@@ -49,7 +49,7 @@ jobs:
       - name: Note
         run: echo "Render redeploys automáticamente en commits a 'main'."
 
-      # DESPLIEGUE (opción B: Deploy Hook de Render) — descomenta si usas hook
-      # - name: Trigger Render Deploy Hook
-      #   if: github.ref == 'refs/heads/main'
-      #   run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+      DESPLIEGUE (opción B: Deploy Hook de Render) — descomenta si usas hook
+      - name: Trigger Render Deploy Hook
+         if: github.ref == 'refs/heads/main'
+         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
