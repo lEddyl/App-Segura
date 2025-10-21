@@ -2,7 +2,8 @@ name: CI / Seguridad / Deploy
 
 on:
   push:
-    branches: ["main"]
+    branches: 
+      - main
   pull_request:
 
 jobs:
@@ -40,9 +41,10 @@ jobs:
       - name: Build (validate package)
         run: python -c "import sys; print('Build OK con Python', sys.version)"
 
-      DESPLIEGUE (opción: Deploy Hook de Render)
+       DESPLIEGUE (opción: Deploy Hook de Render)
       # Descomenta si ya creaste el secreto RENDER_DEPLOY_HOOK_URL
-      - name: Trigger Render Deploy Hook
+       - name: Trigger Render Deploy Hook
          if: github.ref == 'refs/heads/main'
          run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
 
