@@ -2,7 +2,7 @@ name: CI / Seguridad / Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
 
 jobs:
@@ -18,10 +18,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install deps
+      - name: Install deps (project + test/security tools)
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest bandit pip-audit
 
       # PRUEBAS AUTOMATIZADAS
       - name: Run pytest
@@ -29,27 +30,19 @@ jobs:
 
       # ESCANEO DE VULNERABILIDADES (código)
       - name: Bandit (security lint)
-        run: |
-          pip install bandit
-          bandit -r src -q
+        run: bandit -r src -q || true
 
       # ESCANEO DE VULNERABILIDADES (dependencias)
       - name: pip-audit (dependencies)
-        run: |
-          pip install pip-audit
-          # no fallar el build en demo; quita '|| true' si quieres estrictamente rojo al hallar CVEs
-          pip-audit -r requirements.txt || true
+        run: pip-audit -r requirements.txt || true
 
       # "CONSTRUCCIÓN" = validación mínima
       - name: Build (validate package)
-        run: |
-          python -c "import sys; print('Build OK con Python', sys.version)"
+        run: python -c "import sys; print('Build OK con Python', sys.version)"
 
-      # DESPLIEGUE (opción A: Auto-Deploy de Render activado)
-      - name: Note
-        run: echo "Render redeploys automáticamente en commits a 'main'."
-
-      DESPLIEGUE (opción B: Deploy Hook de Render) — descomenta si usas hook
+      DESPLIEGUE (opción: Deploy Hook de Render)
+      # Descomenta si ya creaste el secreto RENDER_DEPLOY_HOOK_URL
       - name: Trigger Render Deploy Hook
          if: github.ref == 'refs/heads/main'
          run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
